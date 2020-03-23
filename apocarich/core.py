@@ -1,8 +1,9 @@
+import os
+
 import requests
 import pandas
 
-API_KEY = "demo"
-
+API_KEY = os.environ.get("ALPHAVANTAGE_API_KEY")
 
 def test_api():
     symbol = "FRA"
@@ -66,7 +67,12 @@ def get_stock_prices(
         response.status_code == 200
     ), f"Response failed, status code {response.status_code}"
     result = response.json()
-    assert "Error Message" not in result, f"Invalid symbol: '{symbol}'"
+
+    if "Error Message" in result:
+        print("Error:")
+        print(result["Error Message"])
+        exit()
+
     assert "Time Series (Daily)" in result
     time_series = result["Time Series (Daily)"]
     return _time_series_response_to_data_frame(time_series, symbol)
