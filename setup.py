@@ -6,4 +6,9 @@ setup(
     url="https://github.com/ptrstn/apocarich",
     packages=find_packages(),
     install_requires=["requests", "pandas"],
+    entry_points={
+            "console_scripts": [
+                "apocarich=apocarich.__main__:main",
+            ]
+        },
 )
