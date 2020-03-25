@@ -5,6 +5,7 @@ import pandas
 
 API_KEY = os.environ.get("ALPHAVANTAGE_API_KEY")
 
+
 def test_api():
     symbol = "FRA"
     function = "TIME_SERIES_DAILY"
@@ -47,7 +48,8 @@ def _time_series_response_to_data_frame(time_series, symbol):
         },
         inplace=True,
     )
-    return df
+    df.index = df.index.set_names("date")
+    return df.reset_index(col_fill="date")
 
 
 def get_stock_prices(
