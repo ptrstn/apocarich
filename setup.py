@@ -9,7 +9,7 @@ setup(
     entry_points={
         "console_scripts": [
             "apocarich=apocarich.__main__:main",
-            "getdata=apocarich.data:retrieve_all_aws_data",
+            "getdata=apocarich.data:main",
         ]
     },
 )

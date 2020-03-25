@@ -59,3 +59,5 @@ ls data/deutsche-boerse-xetra-pds/${date}
 
 - https://towardsdatascience.com/implementing-moving-averages-in-python-1ad28e636f9d
 - https://janakiev.com/blog/python-shell-commands/
+- https://stackoverflow.com/questions/19587118/iterating-through-directories-with-python
+- https://stackoverflow.com/questions/29384696/how-to-find-current-day-is-weekday-or-weekends-in-python
