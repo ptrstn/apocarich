@@ -4,12 +4,16 @@ import subprocess
 from pathlib import Path
 
 import pandas as pd
-import os
-import seaborn as sns
 
-sns.set(color_codes=True)
+pd.set_option("display.max_rows", 10)
+pd.set_option("display.max_columns", None)
+pd.set_option("display.width", None)
+pd.set_option("display.max_colwidth", None)
 
 DATE_FORMAT = "%Y-%m-%d"
+CACHE_PATH = Path("cache", "stonks.pkl")
+GROUPED_CACHE_PATH = Path("cache", "grouped_stonks.pkl")
+EXPORTED_CSV_PATH = Path("data", "data.csv")
 
 
 def is_weekend(date_string):
@@ -28,32 +32,82 @@ def create_empty_file(path):
 
 def remove_all_may_be_incomplete_files():
     for filename in glob.iglob("data/**", recursive=True):
-        if os.path.isfile(filename):  # filter dirs
+        if Path(filename).exists():  # filter dirs
             if "MAY_BE_INCOMPLETE" in filename:
                 print(f"Removing {filename}...")
                 Path(filename).unlink()
 
 
-def read_data_directory(
-    date=None, base_path="data", market="deutsche-boerse-xetra-pds"
-):
-    """
-    :param date: e.g. "2020-03-20, latest if None
-    :param base_path: data base path
-    :param market: "deutsche-boerse-xetra-pds" or "deutsche-boerse-eurex-pds"
-    :return: pandas data frame
-    """
-    if not date:
-        dates = os.listdir(os.path.join(base_path, market))
-        date = sorted(dates, reverse=True)[0]
+def cache_dataframe(df):
+    CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
+    df.to_pickle(CACHE_PATH)
 
-    path = os.path.join(base_path, market, date)
+
+def load_dataframe_cache():
+    return pd.read_pickle(CACHE_PATH)
+
+
+def cache_grouped_dataframe(df):
+    GROUPED_CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
+    df.to_pickle(GROUPED_CACHE_PATH)
+
+
+def load_grouped_dataframe_cache():
+    return pd.read_pickle(GROUPED_CACHE_PATH)
+
+
+def group_per_day(df):
+    print("Grouping DataFrame per day...")
+    copy = df.copy()
+    copy.loc[:, "AveragePrice"] = (copy.StartPrice + copy.EndPrice) / 2
+    columns = ["ISIN", "Mnemonic", "SecurityDesc", "SecurityType", "Currency", "Date"]
+    mean = copy.groupby(columns).AveragePrice.agg(["mean"])
+    volume = copy.groupby(columns).TradedVolume.agg(["sum"])
+    trades = copy.groupby(columns).NumberOfTrades.agg(["sum"])
+
+    grouped_df = mean.reset_index().rename(columns={"mean": "price"})
+    grouped_df.loc[:, "volume"] = volume["sum"].reset_index()["sum"]
+    grouped_df.loc[:, "trades"] = trades["sum"].reset_index()["sum"]
+
+    return grouped_df
+
+
+def group_per_stonk(df):
+    columns = ["ISIN", "Mnemonic", "SecurityDesc", "SecurityType", "Currency"]
+    df.groupby(columns)["volume", "trades"].sum()
+
+
+def filter_common_stocks(dataframe):
+    return dataframe[dataframe.SecurityType == "Common stock"]
+
+
+def filter_recent(df):
+    return df[df['Date'] > '2019-01-01']
+
+
+def read_data_directory(path):
+    """
+    :param path: path of the csv files
+    :return: pandas DataFrame
+    """
+    print(f"Reading data from {path}...")
     return pd.concat(
-        [
-            pd.read_csv(os.path.join(path, file))
-            for file in os.listdir(path)
-            if file.endswith(".csv")
-        ]
+        [pd.read_csv(file) for file in Path(path).glob("*.csv")], ignore_index=True
+    )
+
+
+def read_data(market="xetra", base_path="data"):
+    path = Path(base_path, f"deutsche-boerse-{market}-pds")
+
+    print("Loading data...")
+
+    return (
+        pd.concat(
+            [read_data_directory(folder) for folder in path.iterdir()],
+            ignore_index=True,
+        )
+        #.sort_values(by=["Date", "Time", "Mnemonic"], ascending=[False, True, True])
+        #.reset_index(drop=True)
     )
 
 
@@ -110,13 +164,12 @@ def retrieve_all_aws_data(start_date="2019-12-01", trading_platform="xetra"):
         retrieve_aws_data(date, trading_platform)
 
 
-def filter_common_stocks(dataframe):
-    return dataframe[dataframe.SecurityType == "Common stock"]
+def update_data_csv():
+    df = read_data()
+    df = df.pipe(filter_recent)
 
-
-def do():
-    df = read_data_directory("2019-12-02").pipe(filter_common_stocks)
-    df["price"] = df.StartPrice + df.EndPrice / 2
+    g = group_per_day(df)
+    g.to_csv(EXPORTED_CSV_PATH)
 
 
 def main():

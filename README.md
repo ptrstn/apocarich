@@ -45,6 +45,26 @@ aws s3 sync s3://deutsche-boerse-eurex-pds/${date} data/deutsche-boerse-eurex-pd
 ls data/deutsche-boerse-xetra-pds/${date}
 ```
 
+Columns:
+
+```
+['ISIN',
+ 'Mnemonic',
+ 'SecurityDesc',
+ 'SecurityType',
+ 'Currency',
+ 'SecurityID',
+ 'Date',
+ 'Time',
+ 'StartPrice',
+ 'MaxPrice',
+ 'MinPrice',
+ 'EndPrice',
+ 'TradedVolume',
+ 'NumberOfTrades',
+ 'Price']
+```
+
 ## Links
 
 - https://registry.opendata.aws/deutsche-boerse-pds/
@@ -61,3 +81,9 @@ ls data/deutsche-boerse-xetra-pds/${date}
 - https://janakiev.com/blog/python-shell-commands/
 - https://stackoverflow.com/questions/19587118/iterating-through-directories-with-python
 - https://stackoverflow.com/questions/29384696/how-to-find-current-day-is-weekday-or-weekends-in-python
+
+- https://www.youtube.com/watch?v=qy0fDqoMJx8
+
+### Stock APIs
+
+- https://dataondemand.nasdaq.com/docs/
