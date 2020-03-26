@@ -85,9 +85,10 @@ plot_biggest_loosers <- function(data,
     ggtitle("30 of the biggest loosers")
 }
 
-add_moving_average_column <- function(data, window_size){
-  data %>% 
-    arrange(Mnemonic, SecurityDesc, SecurityType, Currency) %>% 
+add_moving_average_column <- function(data_, window_size){
+  data_ %>% 
+    arrange(Mnemonic, SecurityDesc, SecurityType, Currency, Date) %>% 
+    group_by(Mnemonic, SecurityDesc, SecurityType, Currency) %>% 
     mutate(`Moving average` = rollapplyr(price, window_size, mean, partial=TRUE))
 }
 
@@ -118,16 +119,69 @@ add_loss_column <- function(data, window_size = 15){
     add_moving_average_column(window_size) %>%
     group_by(Mnemonic, SecurityDesc)
   
-  before <- d %>% filter(Date < "2020-02-18")
-  after <- d %>% filter(Date >= "2020-02-18")
+  before_max_tibble <-  d %>% 
+    filter(Date < "2020-02-18") %>%
+    mutate(maximum = max(`Moving average`)) %>%
+    select(ISIN, Mnemonic, SecurityDesc, maximum) %>% 
+    distinct()
+  # 2906
   
-  before <- before %>%
-    mutate(maximum = max(`Moving average`)) 
+  after_min_tibble <- d %>% 
+    filter(Date >= "2020-02-18") %>% 
+    mutate(minimum = min(`Moving average`)) %>%
+    select(ISIN, Mnemonic, SecurityDesc, minimum) %>% 
+    distinct()
+  # 2768
   
-  after <- after %>% 
-    mutate(minimum = min(`Moving average`))
+  new_tibble <- before_max_tibble %>% 
+    full_join(after_min_tibble) %>% 
+    mutate(loss = 1 - minimum / maximum)
   
-  
-  
-    mutate(loss = 1 - minimum/maximum)
+  d %>% left_join(new_tibble)
+  # 266.252
 }
+
+plot_biggest_losses <- function(data, stock_type = "Common stock", number_of_stocks = 20) {
+  
+}
+
+
+stock_type = "Common stock"
+number_of_stocks = 20
+
+d <- data %>%
+  filter(SecurityType == stock_type) %>%
+  add_loss_column() %>% 
+  arrange(desc(loss)) 
+
+mnemonics <- d %>% 
+  distinct(Mnemonic) %>%  # remove duplicates (same stock different different day)
+  ungroup() %>%           # undo grouping
+  select(Mnemonic) %>%    # Onlz 1 column
+  slice(1:number_of_stocks) %>% # only first few rows
+  pull()                  # Column to vector
+
+a <- d %>% filter(Mnemonic %in% mnemonics)
+a$Mnemonic <- factor(a$Mnemonic, levels = unique(a$Mnemonic))
+
+NUMBER_OF_CHARACTERS = 10
+a$stock_label <- paste(
+  "[", a$Mnemonic, "] ", 
+  str_sub(a$SecurityDesc, 1, NUMBER_OF_CHARACTERS), 
+  " (-", format(round(a$loss, 4)*100), "%)",
+  sep = "")
+a$stock_label <- factor(a$stock_label, levels = unique(a$stock_label))
+
+b <- a %>% 
+  add_moving_average_column(window_size = 15) %>% 
+  gather_price_types()
+  
+title = paste("Biggest losses in", stock_type)
+
+b %>% #filter(`Price type` == "Moving average") %>%
+  ggplot(aes(Date, Value, colour=`Price type`)) + 
+  geom_line() + 
+  ggtitle(title) +
+  theme(plot.title = element_text(face = "bold", hjust=0.5)) + 
+  scale_color_brewer(palette="Set1") +
+  facet_wrap(vars(stock_label), scales = "free")

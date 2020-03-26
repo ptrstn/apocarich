@@ -4,6 +4,7 @@ source(here("rcode", "requirements.R"))
 
 data <- read_csv("data/data.csv") %>% select(-X1)
 data <- data %>% filter(Date > "2019-11-01")
+data <- data %>% filter(Date > "2020-02-01")
 
 # plot_most_traded_stonks(data, 30)
 # plot_most_traded_etfs(data, 30)
