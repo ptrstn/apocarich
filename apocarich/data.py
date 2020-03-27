@@ -5,29 +5,18 @@ from pathlib import Path
 
 import pandas as pd
 
+from apocarich.settings import (
+    CACHE_PATH,
+    GROUPED_CACHE_PATH,
+    DATE_FORMAT,
+    EXPORTED_CSV_PATH,
+)
+from apocarich.utils import is_weekend, create_empty_file, is_today
+
 pd.set_option("display.max_rows", 10)
 pd.set_option("display.max_columns", None)
 pd.set_option("display.width", None)
 pd.set_option("display.max_colwidth", None)
-
-DATE_FORMAT = "%Y-%m-%d"
-CACHE_PATH = Path("cache", "stonks.pkl")
-GROUPED_CACHE_PATH = Path("cache", "grouped_stonks.pkl")
-EXPORTED_CSV_PATH = Path("data", "data.csv")
-
-
-def is_weekend(date_string):
-    date = datetime.datetime.strptime(date_string, DATE_FORMAT)
-    return date.weekday() >= 5
-
-
-def is_today(date_string):
-    return datetime.datetime.now().strftime(DATE_FORMAT) == date_string
-
-
-def create_empty_file(path):
-    with open(path, "w"):
-        pass
 
 
 def remove_all_may_be_incomplete_files():
