@@ -77,14 +77,6 @@ def group_per_stonk(df):
     df.groupby(columns)["volume", "trades"].sum()
 
 
-def filter_common_stocks(dataframe):
-    return dataframe[dataframe.SecurityType == "Common stock"]
-
-
-def filter_recent(df):
-    return df[df["Date"] > "2019-01-01"]
-
-
 def read_data_directory(path):
     """
     :param path: path of the csv files
@@ -176,12 +168,6 @@ def retrieve_all_aws_data(
 def update_data_csv():
     print(f"Updating {EXPORTED_CSV_PATH}...\n")
     df = read_data()
-    df = df.pipe(filter_recent)
 
     g = group_per_day(df)
     g.to_csv(EXPORTED_CSV_PATH, index=False)
-
-
-def main():
-    start_date = "2019-11-01"
-    retrieve_all_aws_data(start_date=start_date)

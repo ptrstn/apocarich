@@ -1,5 +1,7 @@
 import plotly.graph_objects as go
 
+from apocarich.alphavantage import get_stock_prices
+
 
 def visualize_data_frame(df, title=""):
     data = [
@@ -20,3 +22,10 @@ def visualize_data_frame(df, title=""):
         font=dict(family="Courier New, monospace", size=20, color="#7f7f7f"),
     )
     fig.show()
+
+
+def visualize_stock_symbol(symbol="DAX"):
+    print(f"Getting stock prices for {symbol}...\n")
+    df = get_stock_prices(symbol)
+    print(f"Visualizing data frame...\n")
+    visualize_data_frame(df, symbol)

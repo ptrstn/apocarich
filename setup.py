@@ -9,8 +9,6 @@ setup(
     entry_points={
         "console_scripts": [
             "apocarich=apocarich.__main__:main",
-            "getdata=apocarich.data:main",
-            "updatedatacsv=apocarich.data:update_data_csv",
         ]
     },
 )

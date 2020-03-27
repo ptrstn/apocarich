@@ -196,7 +196,8 @@ plot_biggest_losses <- function(data,
     add_moving_average_column(window_size=window_size) %>%
     gather_price_types()
   
-  tmp_data <- widened_data %>% filter(`Price type` == "Moving average")
+  tmp_data <- widened_data %>% filter(`Price type` == "Moving average") %>% drop_na()
+  
   if(until_most_recent_day){
     tmp_data <- tmp_data[tmp_data$Value==tmp_data$recent_value | tmp_data$Value==tmp_data$maximum, ]
   } else {

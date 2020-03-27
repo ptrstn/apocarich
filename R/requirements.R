@@ -12,10 +12,5 @@ p_load("stringr")
 p_load("ggplot2")
 p_load("plotly")
 
-p_load("RcppRoll")
 p_load("zoo")
-
-p_load("styler")
-p_load("prettycode")
-
 p_load("R.utils")

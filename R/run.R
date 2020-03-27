@@ -25,7 +25,8 @@ keys <- attachLocally(args)
 data <- read_csv(here("data", "data.csv")) %>%
   filter(Date >= start) %>%
   filter(Date <= end) %>%
-  filter(SecurityType == stocktype)
+  filter(SecurityType == stocktype) %>%
+  drop_na(Mnemonic)
 
 p <- plot_biggest_losses(
   data,
@@ -36,9 +37,6 @@ p <- plot_biggest_losses(
   apocalypse_date = apocalypse,
   until_most_recent_day = untilrecent
 )
-
-p
-
 
 file_name <- paste(stocktype, "_from_", start, "_to_", end, "_apoc_", apocalypse, "__", numstocks, "s_", windowsize, "w", sep = "")
 file_name <- str_replace(file_name, " ", "_")

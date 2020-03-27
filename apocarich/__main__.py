@@ -1,8 +1,6 @@
 import argparse
 
-from apocarich.core import get_stock_prices
 from apocarich.data import retrieve_all_aws_data, update_data_csv
-from apocarich.visual import visualize_data_frame
 from apocarich import __version__
 
 
@@ -45,24 +43,7 @@ def parse_arguments():
         action="store_true",
     )
 
-    # visual_group = parser.add_argument_group(
-    #    "Visualize data"
-    # )
-
-    # visual_group.add_argument(
-    #    "--plot-csv",
-    #    help="Generates an updated data.csv by regrouping previously retrieved data",
-    #    action="store_true",
-    # )
-
     return parser.parse_args()
-
-
-def visualize_stock_symbol(symbol="DAX"):
-    print(f"Getting stock prices for {symbol}...\n")
-    df = get_stock_prices(symbol)
-    print(f"Visualizing data frame...\n")
-    visualize_data_frame(df, symbol)
 
 
 def main():

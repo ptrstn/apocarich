@@ -2,6 +2,9 @@ if (!require("here")) install.packages("here")
 library("here")
 source(here("rcode", "requirements.R"))
 
+p_load("RcppRoll")
+p_load("zoo")
+
 # https://stackoverflow.com/questions/30153835/r-dplyr-rolling-sum
 
 #create data
