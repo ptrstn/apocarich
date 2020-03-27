@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/ptrstn/apocarich.svg?branch=master)](https://travis-ci.com/ptrstn/apocarich)
+
 # apocarich
 
 An apocalyptic stock market analyzer. 
