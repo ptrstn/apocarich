@@ -4,15 +4,12 @@
 
 An apocalyptic stock market analyzer. 
 
-## Install instructions
+## Requirements
 
-```bash
-git clone https://github.com/ptrstn/apocarich
-cd apocarich
-python -m venv venv
-. venv/bin/activate
-pip install -e .
-```
+This project requires:
+- [Python](https://www.python.org/) version 3.6 or greater
+- [R language](https://www.r-project.org/about.html)
+- [Amazon aws-cli](https://aws.amazon.com/de/cli/)
 
 ### R
 
@@ -28,14 +25,26 @@ If you use a different operating system, then check [this link](https://www.r-pr
 
 ### Amazon aws-cli
 
-You also need aws-cli to retrieve the data from Xetra.
-At Arch linux you can install it with:
+You also need aws-cli to [retrieve the data](https://github.com/Deutsche-Boerse/dbg-pds) from Xetra.
+
+With Arch linux you can install it with:
 
 ```bash
 sudo pacman -S aws-cli
 ```
 
 If you use a different operating system, then check [this link](https://docs.aws.amazon.com/de_de/cli/latest/userguide/cli-chap-install.html). 
+
+
+## Install instructions
+
+```bash
+git clone https://github.com/ptrstn/apocarich
+cd apocarich
+python -m venv venv
+. venv/bin/activate
+pip install -e .
+```
 
 ## Usage
 
@@ -97,11 +106,11 @@ You can specify different arguments to further filter your data.
 
 | argument            | Description                                                                  |
 |---------------------|------------------------------------------------------------------------------|
-| ```--start```       | Start Date                                                                   |
-| ```--end```         | End Date                                                                     |
-| ```--apocalypse```  | Date of when shit the fan.                                                   |
+| ```--start```       | Start date                                                                   |
+| ```--end```         | End date                                                                     |
+| ```--apocalypse```  | Date of when shit hit the fan                                                |
 | ```--stocktype```   | "Common stock", "ETF", "ETC", "ETN" or "Other"                               |
-| ```--numstocks```   | Number of stocks to visualize at once.                                       |
+| ```--numstocks```   | Number of stocks to visualize at once                                        |
 | ```--windowsize```  | Moving average window size                                                   |
 | ```--numchars```    | Number of characters to display per subtitle                                 |
 | ```--outdir```      | Path of the output directory                                                 |
