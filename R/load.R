@@ -1,10 +1,10 @@
 if (!require("here")) install.packages("here")
 library("here")
-source(here("rcode", "requirements.R"))
+source(here("R", "requirements.R"))
 
 data <- read_csv("data/data.csv") %>% select(-X1)
 data <- data %>% filter(Date > "2019-11-01")
-data <- data %>% filter(Date > "2020-02-01")
+# data <- data %>% filter(Date > "2020-02-01")
 
 # plot_most_traded_stonks(data, 30)
 # plot_most_traded_etfs(data, 30)
@@ -52,9 +52,9 @@ wide <- wide %>%
 biggest_looser_ISINs <- wide$ISIN[0:30]
 biggest_looser_name <- wide$Mnemonic[0:30]
 
-d <- data %>% filter(ISIN %in% biggest_looser_ISINs)
-d$Mnemonic <- factor(d$Mnemonic, levels = biggest_looser_name)
-d$SecurityDesc <- str_sub(d$SecurityDesc, 1, 20)
+filtered_data <- data %>% filter(ISIN %in% biggest_looser_ISINs)
+filtered_data$Mnemonic <- factor(filtered_data$Mnemonic, levels = biggest_looser_name)
+filtered_data$SecurityDesc <- str_sub(filtered_data$SecurityDesc, 1, 20)
 d %>%
   ggplot(aes(Date, price)) +
   geom_line() +

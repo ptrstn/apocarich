@@ -1,6 +1,9 @@
 if (!require("here")) install.packages("here")
 library("here")
-source(here("rcode", "requirements.R"))
+source(here("R", "requirements.R"))
 
-style_file(here("R", "load.R"))
-style_file(here("R", "requirements"))
+style_file(here("R", "requirements.R"))
+style_file(here("R", "defaults.R"))
+style_file(here("R", "functions.R"))
+style_file(here("R", "run.R"))
+style_file(here("R", "snippets", "style.R"))

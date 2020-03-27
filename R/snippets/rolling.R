@@ -2,7 +2,6 @@ if (!require("here")) install.packages("here")
 library("here")
 source(here("rcode", "requirements.R"))
 
-
 # https://stackoverflow.com/questions/30153835/r-dplyr-rolling-sum
 
 #create data

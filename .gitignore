@@ -260,4 +260,5 @@ vignettes/*.pdf
 data/
 cache/
 images/
+plots/
 .Rproj.user
