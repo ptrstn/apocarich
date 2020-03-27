@@ -5,85 +5,114 @@ An apocalyptic stock market analyzer.
 ## Install instructions
 
 ```bash
-pip install --user git+https://github.com/ptrstn/apocarich
+git clone https://github.com/ptrstn/apocarich
+cd apocarich
+python -m venv venv
+. venv/bin/activate
+pip install -e .
 ```
+
+### R
+
+Plots are created using the R language. 
+
+Under arch linux you can install it with:
+
+```bash
+sudo pacman -S r
+```
+
+If you use a different operating system, then check [this link](https://www.r-project.org/about.html). 
+
+### Amazon aws-cli
+
+You also need aws-cli to retrieve the data from Xetra.
+At Arch linux you can install it with:
+
+```bash
+sudo pacman -S aws-cli
+```
+
+If you use a different operating system, then check [this link](https://docs.aws.amazon.com/de_de/cli/latest/userguide/cli-chap-install.html). 
 
 ## Usage
 
-Export your API key:
+### Help
 
 ```bash
-export ALPHAVANTAGE_API_KEY="<YOUR API KEY>"
+apocarich --help
 ```
 
-Run the script:
+Output:
 
 ```bash
-apocarich
+usage: apocarich [-h] [--version] [--retrieve-data] [--start DATE] [--end DATE] [--update-csv]
+
+Analyzing the stock market
+
+optional arguments:
+  -h, --help       show this help message and exit
+  --version        show program's version number and exit
+
+Retrieving data from Xetra:
+  --retrieve-data  Retrieve data from Xetra using the Amazon aws-cli
+  --start DATE     Start date (default is 2019-11-01)
+  --end DATE       End date (default is today)
+
+Updating exported data.csv by retrieved data:
+  --update-csv     Generates an updated data.csv by regrouping previously retrieved data
 ```
 
-## Get Data
+### Retrieve Data
+
+First you have to retrieve some data. The following command downloads data from Xetra using the Amazon aws-cli.
 
 ```bash
-yay -S aws-cli
-
-date='2020-03-20'
-date='2017-05-27' # min von eurex
-date='2017-06-17' # min von xetra 
-
-aws s3 sync s3://deutsche-boerse-xetra-pds/${date} data/deutsche-boerse-xetra-pds/${date} --no-sign-request
-aws s3 sync s3://deutsche-boerse-eurex-pds/${date} data/deutsche-boerse-eurex-pds/${date} --no-sign-request
-
-date='2017-06-18' 
-aws s3 sync s3://deutsche-boerse-xetra-pds/${date} data/deutsche-boerse-xetra-pds/${date} --no-sign-request
-aws s3 sync s3://deutsche-boerse-eurex-pds/${date} data/deutsche-boerse-eurex-pds/${date} --no-sign-request
-
-date='2017-06-19' 
-aws s3 sync s3://deutsche-boerse-xetra-pds/${date} data/deutsche-boerse-xetra-pds/${date} --no-sign-request
-aws s3 sync s3://deutsche-boerse-eurex-pds/${date} data/deutsche-boerse-eurex-pds/${date} --no-sign-request
-
-ls data/deutsche-boerse-xetra-pds/${date}
+apocarich --retrieve-data
 ```
 
-Columns:
+If you want to specify specific dates, then you can use the ```--start``` and ```--end``` arguments:
 
-```
-['ISIN',
- 'Mnemonic',
- 'SecurityDesc',
- 'SecurityType',
- 'Currency',
- 'SecurityID',
- 'Date',
- 'Time',
- 'StartPrice',
- 'MaxPrice',
- 'MinPrice',
- 'EndPrice',
- 'TradedVolume',
- 'NumberOfTrades',
- 'Price']
+
+```bash
+apocarich --retrieve-data --start 2020-01-01 --end 2020-03-26
 ```
 
-## Links
+### Process data
 
-- https://registry.opendata.aws/deutsche-boerse-pds/
-- https://github.com/Deutsche-Boerse/dbg-pds
+For the next step you have to regroup the raw data, to be able to visualize them later.
 
-- https://quant.stackexchange.com/questions/38429/symbols-for-dax-from-alpha-vantage
-- https://www.alphavantage.co/documentation/
+Create the grouped CSV file, based on previously retrieved data:
 
-- https://github.com/Originate/dbg-pds-tensorflow-demo/blob/master/notebooks/01-data-cleaning-single-stock.ipynb
-- https://registry.opendata.aws/
-- https://towardsdatascience.com/python-stock-analysis-candlestick-chart-with-python-and-plotly-e619143642bb
+```bash
+apocarich --update-csv
+```
 
-- https://towardsdatascience.com/implementing-moving-averages-in-python-1ad28e636f9d
-- https://janakiev.com/blog/python-shell-commands/
-- https://stackoverflow.com/questions/19587118/iterating-through-directories-with-python
-- https://stackoverflow.com/questions/29384696/how-to-find-current-day-is-weekday-or-weekends-in-python
+### Create plots
 
-- https://www.youtube.com/watch?v=qy0fDqoMJx8
+Once the data is processed you can run the R script that generates a plot for you.
+You can specify different arguments to further filter your data.
 
-### Stock APIs
+| argument            | Description                                                                  |
+|---------------------|------------------------------------------------------------------------------|
+| ```--start```       | Start Date                                                                   |
+| ```--end```         | End Date                                                                     |
+| ```--apocalypse```  | Date of when shit the fan.                                                   |
+| ```--stocktype```   | "Common stock", "ETF", "ETC", "ETN" or "Other"                               |
+| ```--numstocks```   | Number of stocks to visualize at once.                                       |
+| ```--windowsize```  | Moving average window size                                                   |
+| ```--numchars```    | Number of characters to display per subtitle                                 |
+| ```--outdir```      | Path of the output directory                                                 |
+| ```--untilrecent``` | Calculate loss by biggest drop after apocalypse day or until most recent day |
 
-- https://dataondemand.nasdaq.com/docs/
+Run the R script:
+
+```bash
+ Rscript R/run.R 
+```
+
+You can also specify the arguments described above as follows:
+
+```bash
+ Rscript R/run.R --start 2020-02-01 --end 2020-03-26 --apocalypse 2020-02-15 --numchars 5 --outdir images --windowsize 10 --stocktype ETF
+```
