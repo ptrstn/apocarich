@@ -82,7 +82,7 @@ def filter_common_stocks(dataframe):
 
 
 def filter_recent(df):
-    return df[df['Date'] > '2019-01-01']
+    return df[df["Date"] > "2019-01-01"]
 
 
 def read_data_directory(path):
@@ -106,8 +106,8 @@ def read_data(market="xetra", base_path="data"):
             [read_data_directory(folder) for folder in path.iterdir()],
             ignore_index=True,
         )
-        #.sort_values(by=["Date", "Time", "Mnemonic"], ascending=[False, True, True])
-        #.reset_index(drop=True)
+        # .sort_values(by=["Date", "Time", "Mnemonic"], ascending=[False, True, True])
+        # .reset_index(drop=True)
     )
 
 
@@ -145,31 +145,41 @@ def retrieve_aws_data(
     print(f"[OK]\t{date}")
 
 
-def retrieve_all_aws_data(start_date="2019-12-01", trading_platform="xetra"):
+def retrieve_all_aws_data(
+    start_date="2019-12-01", end_date=None, trading_platform="xetra"
+):
     """
     :param trading_platform: "xetra" or "eurex"
     :param start_date: Earliest possible is "2017-06-17" for Xetra AND "2017-05-27" for Eurex
     :return:
     """
     start = datetime.datetime.strptime(start_date, DATE_FORMAT)
-    end = datetime.datetime.now()
+    if not end_date:
+        end = datetime.datetime.now()
+    else:
+        end = datetime.datetime.strptime(end_date, DATE_FORMAT)
 
     generated_dates = [
         start + datetime.timedelta(days=x) for x in range(0, (end - start).days + 1)
     ]
     dates = [date.strftime(DATE_FORMAT) for date in generated_dates]
 
+    print(
+        f"Retrieving data for dates {start.strftime(DATE_FORMAT)} to {end.strftime(DATE_FORMAT)}...\n"
+    )
+
     for date in dates:
-        print(f"Retrieving stock data form {trading_platform} for day {date}...")
+        print(f"Retrieving stock data from {trading_platform} for day {date}...")
         retrieve_aws_data(date, trading_platform)
 
 
 def update_data_csv():
+    print(f"Updating {EXPORTED_CSV_PATH}...\n")
     df = read_data()
     df = df.pipe(filter_recent)
 
     g = group_per_day(df)
-    g.to_csv(EXPORTED_CSV_PATH)
+    g.to_csv(EXPORTED_CSV_PATH, index=False)
 
 
 def main():
