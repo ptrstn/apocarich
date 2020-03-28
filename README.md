@@ -104,17 +104,20 @@ apocarich --update-csv
 Once the data is processed you can run the R script that generates a plot for you.
 You can specify different arguments to further filter your data.
 
-| argument            | Description                                                                  |
-|---------------------|------------------------------------------------------------------------------|
-| ```--start```       | Start date                                                                   |
-| ```--end```         | End date                                                                     |
-| ```--apocalypse```  | Date of when shit hit the fan                                                |
-| ```--stocktype```   | "Common stock", "ETF", "ETC", "ETN" or "Other"                               |
-| ```--numstocks```   | Number of stocks to visualize at once                                        |
-| ```--windowsize```  | Moving average window size                                                   |
-| ```--numchars```    | Number of characters to display per subtitle                                 |
-| ```--outdir```      | Path of the output directory                                                 |
-| ```--untilrecent``` | Calculate loss by biggest drop after apocalypse day or until most recent day |
+| argument               | Description                                                                  |
+|------------------------|------------------------------------------------------------------------------|
+| ```--start```          | Start date                                                                   |
+| ```--end```            | End date                                                                     |
+| ```--apocalypse```     | Date of when shit hit the fan                                                |
+| ```--stocktype```      | "Common stock", "ETF", "ETC", "ETN" or "Other"                               |
+| ```--numstocks```      | Number of stocks to visualize at once                                        |
+| ```--windowsize```     | Moving average window size                                                   |
+| ```--numchars```       | Number of characters to display per subtitle                                 |
+| ```--outdir```         | Path of the output directory                                                 |
+| ```--untilrecent```    | Calculate loss by biggest drop after apocalypse day or until most recent day |
+| ```--nolossuntilapo``` | Filter to stocks with no loss from starting day until apocalypse day         |
+| ```--nmosttraded```    | Filter to n most traded stocks                                               |
+| ```--nmostvolume```    | Filter to n stocks with highest volume                                       |
 
 Run the R script:
 
