@@ -5,10 +5,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from apocarich.settings import (
-    DATE_FORMAT,
-    EXPORTED_CSV_FILE_NAME,
-    BASE_PATH)
+from apocarich.settings import DATE_FORMAT, EXPORTED_CSV_FILE_NAME, BASE_PATH
 from apocarich.utils import is_weekend, create_empty_file, is_today
 
 
@@ -34,11 +31,6 @@ def group_per_day(df):
     grouped_df.loc[:, "trades"] = trades["sum"].reset_index()["sum"]
 
     return grouped_df
-
-
-def group_per_stonk(df):
-    columns = ["ISIN", "Mnemonic", "SecurityDesc", "SecurityType", "Currency"]
-    df.groupby(columns)["volume", "trades"].sum()
 
 
 def read_data_directory(path):
@@ -68,7 +60,11 @@ def read_data(market="xetra", base_path=BASE_PATH):
 
 
 def retrieve_aws_data(
-    date, trading_platform="xetra", skip_duplicate=True, skip_weekend=True, base_path=BASE_PATH
+    date,
+    trading_platform="xetra",
+    skip_duplicate=True,
+    skip_weekend=True,
+    base_path=BASE_PATH,
 ):
     if skip_weekend and is_weekend(date):
         print(f"[SKIP]\tSkipping weekend day {date}...")
@@ -102,7 +98,10 @@ def retrieve_aws_data(
 
 
 def retrieve_all_aws_data(
-    start_date="2019-12-01", end_date=None, trading_platform="xetra", base_path=BASE_PATH
+    start_date="2019-12-01",
+    end_date=None,
+    trading_platform="xetra",
+    base_path=BASE_PATH,
 ):
     """
     :param trading_platform: "xetra" or "eurex"
