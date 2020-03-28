@@ -6,11 +6,11 @@ source(here("R", "settings.R"))
 # Filter most important stonks
 get_most_traded_ISINs <- function(data, number_of_stonks = DEFAULT_NUMBER_OF_STOCKS) {
   by_stonk_trades <- data %>%
-    group_by(ISIN, Mnemonic, SecurityDesc, SecurityType, Currency) %>%
+    group_by(ISIN, Mnemonic, SecurityDesc) %>%
     summarise(trades = sum(trades)) %>%
     arrange(desc(trades))
 
-  by_stonk_trades$ISIN[0:number_of_stonks]
+  by_stonk_trades$ISIN[0:as.integer(number_of_stonks)]
 }
 
 # normal stonks
@@ -77,7 +77,7 @@ plot_biggest_loosers <- function(data,
   filtered_data <- data %>% filter(ISIN %in% biggest_looser_ISINs)
   filtered_data$Mnemonic <- factor(filtered_data$Mnemonic, levels = biggest_looser_name)
 
-  filtered_data$SecurityDesc <- str_sub(filtered_data$SecurityDesc, 1, number_of_characters)
+  filtered_data$SecurityDesc <- str_sub(filtered_data$SecurityDesc, 1, as.integer(number_of_characters))
 
   filtered_data %>%
     ggplot(aes(Date, price)) +
@@ -88,9 +88,9 @@ plot_biggest_loosers <- function(data,
 
 add_moving_average_column <- function(data, window_size) {
   data %>%
-    arrange(Mnemonic, SecurityDesc, SecurityType, Currency, Date) %>%
-    group_by(Mnemonic, SecurityDesc, SecurityType, Currency) %>%
-    mutate(`Moving average` = rollapplyr(price, window_size, mean, partial = TRUE))
+    arrange(Mnemonic, SecurityDesc, Date) %>%
+    group_by(Mnemonic, SecurityDesc) %>%
+    mutate(`Moving average` = rollapplyr(price, as.integer(window_size), mean, partial = TRUE))
 }
 
 gather_price_types <- function(data) {
@@ -147,8 +147,8 @@ add_loss_column <- function(data, apocalypse_date, window_size, until_most_recen
   #  select(-price)
   
   new_tibble <- before_max_tibble %>%
-    full_join(after_min_tibble) %>%
-    full_join(most_recent_tibble) 
+    full_join(after_min_tibble, by = c("ISIN", "Mnemonic", "SecurityDesc")) %>%
+    full_join(most_recent_tibble, by = c("ISIN", "Mnemonic", "SecurityDesc")) 
   
   if(until_most_recent_day){
     new_tibble <- new_tibble %>%
@@ -158,7 +158,7 @@ add_loss_column <- function(data, apocalypse_date, window_size, until_most_recen
       mutate(loss = 1 - minimum / maximum)
   }
   
-  data %>% left_join(new_tibble) %>% ungroup()
+  data %>% left_join(new_tibble, by = c("ISIN", "Mnemonic", "SecurityDesc")) %>% ungroup()
   # 266.252
 }
 
@@ -179,7 +179,7 @@ plot_biggest_losses <- function(data,
     distinct(Mnemonic) %>% # remove duplicates (same stock different different day)
     ungroup() %>% # undo grouping
     select(Mnemonic) %>% # Onlz 1 column
-    slice(1:number_of_stonks) %>% # only first few rows
+    slice(1:as.integer(number_of_stonks)) %>% # only first few rows
     pull() # Column to vector
 
   filtered_data <- filtered_data %>% filter(Mnemonic %in% mnemonics)
@@ -207,9 +207,12 @@ plot_biggest_losses <- function(data,
   tmp_data["Price type"] = "Extrema"
   
   apocalypse_day_data <- widened_data %>% 
+    select(ISIN, Mnemonic, SecurityDesc, Date, `Price type`, Value, stock_label) %>%
     filter(`Price type` == "Moving average") %>%
-    filter(Date == apocalypse_date)
-  apocalypse_day_data["Price type"] = "Apocalypse day"
+    filter(Date <= apocalypse_date) %>%
+    group_by(ISIN, Mnemonic, SecurityDesc, stock_label) %>%
+    top_n(1, Date) %>%
+    mutate(`Price type` = "Apocalypse day")
   
   title <- paste("Biggest losses in", stock_type)
   
@@ -268,7 +271,7 @@ filter_most_traded <- function(data, nmosttraded){
       summarise(trade_sum = sum(trades)) %>%
       ungroup() %>%
       arrange(desc(trade_sum)) %>%
-      slice(1:nmosttraded) %>%
+      slice(1:as.integer(nmosttraded)) %>%
       select(ISIN) %>%
       pull()
     
@@ -286,7 +289,7 @@ filter_most_volume <- function(data, nmosttraded){
       summarise(trade_sum = sum(volume)) %>%
       ungroup() %>%
       arrange(desc(trade_sum)) %>%
-      slice(1:nmostvolume) %>%
+      slice(1:as.integer(nmostvalue)) %>%
       select(ISIN) %>%
       pull()
     

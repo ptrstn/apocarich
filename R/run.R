@@ -3,6 +3,10 @@
 # Rscript R/run.R --start 2020-01-03 --end 2020-03-26 --apocalypse 2020-02-05 --numchars 5 --outdir bilder --windowsize 1 --stocktype ETF
 #
 
+
+cat("Started apocarich R script!\n")
+cat("\nLoading/installing R packages...\n")
+
 if (!require("here")) install.packages("here")
 library("here")
 source(here("R", "requirements.R"))
@@ -22,8 +26,12 @@ nmosttraded <- DEFAULT_NUMBER_OF_MOST_TRADED_STOCKS
 nmostvolume <- DEFAULT_NUMBER_OF_MOST_VOLUME_STOCKS
 nolossuntilapo <- DEFAULT_NO_LOSS_UNTIL_APOCALYPSE_DATE
 
+cat("\nParsing command line arguments...\n")
+
 args <- commandArgs(trailingOnly = TRUE, asValues = TRUE)
 keys <- attachLocally(args)
+
+cat("\nReading data...\n")
 
 data <- read_csv(here("data", "data.csv")) %>%
   filter(Date >= start) %>%
@@ -36,6 +44,9 @@ data <- read_csv(here("data", "data.csv")) %>%
 
 caption <- generate_caption(data, stocktype, apocalypse, windowsize, nmosttraded, nmostvolume, untilrecent, nolossuntilapo)
 
+
+cat("\nPlotting data...\n")
+
 p <- plot_biggest_losses(
   data,
   stock_type = stocktype,
@@ -46,7 +57,6 @@ p <- plot_biggest_losses(
   until_most_recent_day = untilrecent,
   caption = caption
 ) 
-
 
 file_name <- paste(stocktype, "_from_", start, "_to_", end, "_apoc_", apocalypse, "__", numstocks, "s_", windowsize, "w", sep = "")
 file_name <- str_replace(file_name, " ", "_")
