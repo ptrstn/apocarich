@@ -49,7 +49,7 @@ def parse_arguments():
 def main():
     args = parse_arguments()
 
-    print("Welcome to the apocalyptic stock market analyzer!\n\n")
+    print("Welcome to the apocalyptic stock market analyzer!\n")
 
     if args.retrieve_data:
         print("Retrieving data :-)")

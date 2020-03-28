@@ -128,7 +128,14 @@ Rscript R/apocarich.R
 You can also specify the arguments described above as follows:
 
 ```bash
-Rscript R/apocarich.R --start 2020-02-01 --end 2020-03-26 --apocalypse 2020-02-15 --numchars 5 --outdir images --windowsize 10 --stocktype ETF
+Rscript R/apocarich.R \
+    --start 2020-02-01 \
+    --end 2020-03-26 \
+    --apocalypse 2020-02-15 \
+    --numchars 5 \
+    --outdir images \
+    --windowsize 10 \
+    --stocktype ETF
 ```
 
 ## Example
@@ -136,7 +143,11 @@ Rscript R/apocarich.R --start 2020-02-01 --end 2020-03-26 --apocalypse 2020-02-1
 Full example of how to create a plot
 
 ```bash
-pip install --user git+https://github.com/ptrstn/apocarich
+git clone https://github.com/ptrstn/apocarich
+cd apocarich
+python -m venv venv
+. venv/bin/activate
+pip install .
 apocarich --retrieve-data --start 2020-02-10 --end 2020-02-26
 apocarich --update-csv
 apocarich.R
