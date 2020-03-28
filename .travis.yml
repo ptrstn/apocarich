@@ -1,18 +1,27 @@
-language: python
+matrix:
+  include:
+    - language: python
+      python:
+        - "3.6"
+        - "3.7"
+        - "3.8"
+      install:
+        - pip install pytest codecov pytest-cov
+        - pip install -e .
+      script:
+        - apocarich --retrieve-data --start 2020-02-10 --end 2020-02-26
+        - apocarich --update-csv
+        - pytest --cov .
+      after_success:
+        - codecov
 
-python:
-  - "3.6"
-  - "3.7"
-  - "3.8"
-
-install:
-  - pip install pytest codecov pytest-cov
-  - pip install -e .
-
-script:
-  - apocarich --retrieve-data --start 2020-02-10 --end 2020-02-26
-  - apocarich --update-csv
-  - pytest --cov .
-
-after_success:
-  - codecov
+    - language: R
+      cache: packages
+      r_packages:
+        - here
+        - tidyverse
+        - plotly
+        - zoo
+        - R.utils
+      script:
+        - Rscript R/apocarich.R
