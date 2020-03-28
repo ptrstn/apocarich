@@ -130,3 +130,14 @@ You can also specify the arguments described above as follows:
 ```bash
 Rscript R/apocarich.R --start 2020-02-01 --end 2020-03-26 --apocalypse 2020-02-15 --numchars 5 --outdir images --windowsize 10 --stocktype ETF
 ```
+
+## Example
+
+Full example of how to create a plot
+
+```bash
+pip install --user git+https://github.com/ptrstn/apocarich
+apocarich --retrieve-data --start 2020-02-10 --end 2020-02-26
+apocarich --update-csv
+apocarich.R
+```

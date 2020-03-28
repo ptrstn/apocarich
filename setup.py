@@ -11,4 +11,5 @@ setup(
             "apocarich=apocarich.__main__:main",
         ]
     },
+    scripts=['R/apocarich.R'],
 )
