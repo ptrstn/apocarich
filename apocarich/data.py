@@ -6,43 +6,18 @@ from pathlib import Path
 import pandas as pd
 
 from apocarich.settings import (
-    CACHE_PATH,
-    GROUPED_CACHE_PATH,
     DATE_FORMAT,
     EXPORTED_CSV_FILE_NAME,
-)
+    BASE_PATH)
 from apocarich.utils import is_weekend, create_empty_file, is_today
 
-pd.set_option("display.max_rows", 10)
-pd.set_option("display.max_columns", None)
-pd.set_option("display.width", None)
-pd.set_option("display.max_colwidth", None)
 
-
-def remove_all_may_be_incomplete_files(base_path="data"):
+def remove_all_may_be_incomplete_files(base_path=BASE_PATH):
     for filename in glob.iglob(f"{base_path}/**", recursive=True):
         if Path(filename).exists():  # filter dirs
             if "MAY_BE_INCOMPLETE" in filename:
                 print(f"Removing {filename}...")
                 Path(filename).unlink()
-
-
-def cache_dataframe(df):
-    CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
-    df.to_pickle(CACHE_PATH)
-
-
-def load_dataframe_cache():
-    return pd.read_pickle(CACHE_PATH)
-
-
-def cache_grouped_dataframe(df):
-    GROUPED_CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
-    df.to_pickle(GROUPED_CACHE_PATH)
-
-
-def load_grouped_dataframe_cache():
-    return pd.read_pickle(GROUPED_CACHE_PATH)
 
 
 def group_per_day(df):
@@ -77,7 +52,7 @@ def read_data_directory(path):
     )
 
 
-def read_data(market="xetra", base_path="data"):
+def read_data(market="xetra", base_path=BASE_PATH):
     path = Path(base_path, f"deutsche-boerse-{market}-pds")
 
     print("Loading data...")
@@ -93,7 +68,7 @@ def read_data(market="xetra", base_path="data"):
 
 
 def retrieve_aws_data(
-    date, trading_platform="xetra", skip_duplicate=True, skip_weekend=True, base_path="data"
+    date, trading_platform="xetra", skip_duplicate=True, skip_weekend=True, base_path=BASE_PATH
 ):
     if skip_weekend and is_weekend(date):
         print(f"[SKIP]\tSkipping weekend day {date}...")
@@ -127,7 +102,7 @@ def retrieve_aws_data(
 
 
 def retrieve_all_aws_data(
-    start_date="2019-12-01", end_date=None, trading_platform="xetra", base_path="data"
+    start_date="2019-12-01", end_date=None, trading_platform="xetra", base_path=BASE_PATH
 ):
     """
     :param trading_platform: "xetra" or "eurex"
@@ -154,7 +129,7 @@ def retrieve_all_aws_data(
         retrieve_aws_data(date, trading_platform, base_path=base_path)
 
 
-def update_data_csv(base_path="data"):
+def update_data_csv(base_path=BASE_PATH):
     path = Path(base_path, EXPORTED_CSV_FILE_NAME)
     print(f"Updating {path}...\n")
     df = read_data(base_path=base_path)
