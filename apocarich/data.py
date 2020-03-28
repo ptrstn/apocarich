@@ -155,8 +155,9 @@ def retrieve_all_aws_data(
 
 
 def update_data_csv(base_path="data"):
-    print(f"Updating {Path(base_path, EXPORTED_CSV_FILE_NAME)}...\n")
+    path = Path(base_path, EXPORTED_CSV_FILE_NAME)
+    print(f"Updating {path}...\n")
     df = read_data(base_path=base_path)
 
     g = group_per_day(df)
-    g.to_csv(EXPORTED_CSV_FILE_NAME, index=False)
+    g.to_csv(path, index=False)
