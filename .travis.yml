@@ -18,6 +18,7 @@ matrix:
     - language: R
       cache: packages
       r_packages:
+        - pacman
         - here
         - tidyverse
         - plotly
