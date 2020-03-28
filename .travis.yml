@@ -10,6 +10,8 @@ install:
   - pip install -e .
 
 script:
+  - apocarich --retrieve-data --start 2020-02-10 --end 2020-02-26
+  - apocarich --update-csv
   - pytest --cov .
 
 after_success:
