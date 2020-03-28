@@ -4,7 +4,7 @@ matrix:
       python: "3.6"
       install:
         - pip install pytest codecov pytest-cov
-        - pip install -e .
+        - pip install .
       script:
         - apocarich --retrieve-data --start 2020-02-10 --end 2020-02-26
         - apocarich --update-csv
@@ -14,7 +14,7 @@ matrix:
       python: "3.7"
       install:
         - pip install pytest codecov pytest-cov
-        - pip install -e .
+        - pip install .
       script:
         - apocarich --retrieve-data --start 2020-02-10 --end 2020-02-26
         - apocarich --update-csv
@@ -24,7 +24,7 @@ matrix:
       python: "3.8"
       install:
         - pip install pytest codecov pytest-cov
-        - pip install -e .
+        - pip install .
       script:
         - apocarich --retrieve-data --start 2020-02-10 --end 2020-02-26
         - apocarich --update-csv
