@@ -9,7 +9,6 @@ An apocalyptic stock market analyzer.
 This project requires:
 - [Python](https://www.python.org/) version 3.6 or greater
 - [R language](https://www.r-project.org/about.html)
-- [Amazon aws-cli](https://aws.amazon.com/de/cli/)
 
 ### R
 
@@ -22,19 +21,6 @@ sudo pacman -S r
 ```
 
 If you use a different operating system, then check [this link](https://www.r-project.org/about.html). 
-
-### Amazon aws-cli
-
-You also need aws-cli to [retrieve the data](https://github.com/Deutsche-Boerse/dbg-pds) from Xetra.
-
-With Arch linux you can install it with:
-
-```bash
-sudo pacman -S aws-cli
-```
-
-If you use a different operating system, then check [this link](https://docs.aws.amazon.com/de_de/cli/latest/userguide/cli-chap-install.html). 
-
 
 ## Install instructions
 
