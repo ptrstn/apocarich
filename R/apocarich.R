@@ -55,9 +55,12 @@ p <- plot_biggest_losses(
   apocalypse_date = apocalypse,
   until_most_recent_day = untilrecent,
   caption = caption
-) 
+)
 
-file_name <- paste(stocktype, "_from_", start, "_to_", end, "_apoc_", apocalypse, "__", numstocks, "s_", windowsize, "w", sep = "")
+min_date <- min(data$Date)
+max_date <- max(data$Date)
+
+file_name <- paste(stocktype, "_from_", min_date, "_to_", max_date, "_apoc_", apocalypse, "__", numstocks, "s_", windowsize, "w", sep = "")
 file_name <- str_replace(file_name, " ", "_")
 
 # Save PNG
@@ -65,6 +68,9 @@ png_path <- file.path(outdir, "png", paste(file_name, ".png", sep = ""))
 dir.create(dirname(png_path), showWarnings = FALSE, recursive = TRUE)
 ggsave(p, filename = png_path, width = 16, height = 9)
 cat(paste("\nCreated new file:", png_path, "\n"))
+latest_path <- file.path(outdir, "latest.png")
+ggsave(p, filename = latest_path, width = 16, height = 9)
+cat(paste("Created new file:", latest_path, "\n"))
 
 fig <- ggplotly(p)
 
@@ -73,5 +79,8 @@ html_file_name <- paste(file_name, ".html", sep = "")
 html_path <- file.path(outdir, "html", html_file_name)
 dir.create(dirname(html_path), showWarnings = FALSE, recursive = TRUE)
 withr::with_dir(dirname(html_path), htmlwidgets::saveWidget(as_widget(fig), file = html_file_name))
-
 cat(paste("Created new file:", html_path, "\n"))
+
+latest_path <- file.path(outdir, "latest.html")
+withr::with_dir(dirname(latest_path), htmlwidgets::saveWidget(as_widget(fig), file = "latest.html"))
+cat(paste("Created new file:", latest_path, "\n"))
