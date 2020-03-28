@@ -52,7 +52,6 @@ def main():
     print("Welcome to the apocalyptic stock market analyzer!\n")
 
     if args.retrieve_data:
-        print("Retrieving data :-)")
         retrieve_all_aws_data(start_date=args.start, end_date=args.end)
     elif args.update_csv:
         update_data_csv()

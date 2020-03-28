@@ -146,7 +146,7 @@ def retrieve_all_aws_data(
     dates = [date.strftime(DATE_FORMAT) for date in generated_dates]
 
     print(
-        f"Retrieving data for dates {start.strftime(DATE_FORMAT)} to {end.strftime(DATE_FORMAT)}...\n"
+        f"Retrieving data for days from {start.strftime(DATE_FORMAT)} to {end.strftime(DATE_FORMAT)}...\n"
     )
 
     for date in dates:
