@@ -5,6 +5,8 @@
 
 An apocalyptic stock market analyzer. 
 
+![alt text](example/example.png "Example of analyzed stock market")
+
 ## Requirements
 
 This project requires:
