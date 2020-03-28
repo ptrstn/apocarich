@@ -168,7 +168,8 @@ plot_biggest_losses <- function(data,
                                 window_size = DEFAULT_WINDOW_SIZE,
                                 number_of_characters = DEFAULT_NUMBER_OF_CHARACTERS,
                                 apocalypse_date = DEFAULT_APOCALYPSE_DATE,
-                                until_most_recent_day = DEFAULT_UNTIL_MOST_RECENT_DAY) {
+                                until_most_recent_day = DEFAULT_UNTIL_MOST_RECENT_DAY,
+                                caption=waiver()) {
   filtered_data <- data %>%
     filter(SecurityType == stock_type) %>%
     add_loss_column(apocalypse_date = apocalypse_date, window_size = window_size, until_most_recent_day = until_most_recent_day) %>%
@@ -225,5 +226,109 @@ plot_biggest_losses <- function(data,
     scale_color_brewer(palette = "Set1") +
     geom_point(data=tmp_data, aes(Date, Value)) +
     geom_point(data=apocalypse_day_data, aes(Date, Value)) +
-    facet_wrap(vars(stock_label), scales = "free") 
+    facet_wrap(vars(stock_label), scales = "free") + 
+    labs(caption = caption)
+}
+
+
+generate_caption <- function(data, stocktype, apocalypse, windowsize, nmosttraded, nmostvolume, untilrecent, nolossuntilapo){
+  caption <- ""
+  
+  min_date <- min(data$Date)
+  max_date <- max(data$Date)
+  
+  caption <- paste("Filtered by ", stocktype, "s. ", sep = "")
+  if (!is.null(nmosttraded)) {
+    caption <- paste(caption, "Consdering only the top ", nmosttraded, " companies by trades. ", sep = "")
+  }
+  if (!is.null(nmostvolume)) {
+    caption <- paste(caption, "Consdering only the top ", nmostvolume, " companies by volume. ", sep = "")
+  }
+  if (untilrecent) {
+    caption <- paste(caption, "Filtered companies with biggest drop until today. ", sep = "")
+  } else {
+    caption <- paste(caption, "Filtered companies with biggest drop until after ", apocalypse, ". ", sep = "")
+  }
+  
+  caption <- paste(caption, "\nApocalypse day is ", apocalypse, ". ", sep = "")
+  if (nolossuntilapo) {
+    caption <- paste(caption, "Removed all stocks with no gain from ", min_date, " until apocalypse day. ", sep = "")
+  }
+  caption <- paste(caption, "Window size for moving average is ", windowsize, ".\n", sep = "")
+  
+  caption <- paste(caption, "Dates are from ", min_date, " until ", max_date, ". ", sep = "")
+  caption <- paste(caption, "Data source is Xetra.\n", sep = "")
+  caption
+}
+
+filter_most_traded <- function(data, nmosttraded){
+  if (!is.null(nmosttraded)) {
+    most_traded_isins <- data %>%
+      group_by(ISIN, Mnemonic, SecurityDesc) %>%
+      summarise(trade_sum = sum(trades)) %>%
+      ungroup() %>%
+      arrange(desc(trade_sum)) %>%
+      slice(1:nmosttraded) %>%
+      select(ISIN) %>%
+      pull()
+    
+    data %>% filter(ISIN %in% most_traded_isins)
+  } else {
+    data
+  }
+}
+
+
+filter_most_volume <- function(data, nmosttraded){
+  if (!is.null(nmostvolume)) {
+    most_volume_isins <- data %>%
+      group_by(ISIN, Mnemonic, SecurityDesc) %>%
+      summarise(trade_sum = sum(volume)) %>%
+      ungroup() %>%
+      arrange(desc(trade_sum)) %>%
+      slice(1:nmostvolume) %>%
+      select(ISIN) %>%
+      pull()
+    
+    data %>% filter(ISIN %in% most_volume_isins)
+  } else {
+    data
+  }
+}
+
+filter_no_loss_until_apocalypse <- function(data, nolossuntilapo, apocalypse){
+  if (nolossuntilapo) {
+    # Filter data to all companies with no loss until apocalypse day
+    tmp <- data %>%
+      filter(Date <= apocalypse) %>%
+      add_moving_average_column(window_size = windowsize) %>%
+      group_by(Mnemonic, SecurityDesc)
+    
+    tmp_apocalypse <- tmp %>%
+      top_n(1, Date) %>%
+      mutate(date_type = "apocalypse")
+    
+    tmp_before <- tmp %>%
+      top_n(-1, Date) %>%
+      mutate(date_type = "before")
+    
+    tmp_difference <- bind_rows(tmp_before, tmp_apocalypse) %>%
+      select(-volume, -trades, -price, -Date) %>%
+      ungroup() %>%
+      spread(date_type, `Moving average`) %>%
+      mutate(apoca_difference = apocalypse / before)
+    
+    no_loss_isins <- bind_rows(tmp_before, tmp_apocalypse) %>%
+      select(-volume, -trades, -price, -Date) %>%
+      ungroup() %>%
+      spread(date_type, `Moving average`) %>%
+      mutate(apoca_difference = apocalypse / before) %>%
+      filter(apoca_difference >= 1) %>%
+      select(ISIN) %>%
+      pull()
+    
+    data %>% filter(ISIN %in% no_loss_isins)
+  } else {
+    data
+  }
 }
