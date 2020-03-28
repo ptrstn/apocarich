@@ -25,4 +25,6 @@ matrix:
         - zoo
         - R.utils
       script:
+        - mkdir -p data
+        - cp example/data.csv data/data.csv
         - Rscript R/apocarich.R
