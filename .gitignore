@@ -258,6 +258,7 @@ vignettes/*.pdf
 # End of https://www.gitignore.io/api/r
 
 data/
+test_data/
 cache/
 images/
 plots/

@@ -9,7 +9,7 @@ from apocarich.settings import (
     CACHE_PATH,
     GROUPED_CACHE_PATH,
     DATE_FORMAT,
-    EXPORTED_CSV_PATH,
+    EXPORTED_CSV_FILE_NAME,
 )
 from apocarich.utils import is_weekend, create_empty_file, is_today
 
@@ -19,8 +19,8 @@ pd.set_option("display.width", None)
 pd.set_option("display.max_colwidth", None)
 
 
-def remove_all_may_be_incomplete_files():
-    for filename in glob.iglob("data/**", recursive=True):
+def remove_all_may_be_incomplete_files(base_path="data"):
+    for filename in glob.iglob(f"{base_path}/**", recursive=True):
         if Path(filename).exists():  # filter dirs
             if "MAY_BE_INCOMPLETE" in filename:
                 print(f"Removing {filename}...")
@@ -93,13 +93,13 @@ def read_data(market="xetra", base_path="data"):
 
 
 def retrieve_aws_data(
-    date, trading_platform="xetra", skip_duplicate=True, skip_weekend=True
+    date, trading_platform="xetra", skip_duplicate=True, skip_weekend=True, base_path="data"
 ):
     if skip_weekend and is_weekend(date):
         print(f"[SKIP]\tSkipping weekend day {date}...")
         return
 
-    target_path = Path("data", f"deutsche-boerse-{trading_platform}-pds", date)
+    target_path = Path(base_path, f"deutsche-boerse-{trading_platform}-pds", date)
     files = sorted([f.stem for f in list(target_path.glob("*.csv"))])
 
     if skip_duplicate and len(files) > 0:
@@ -127,7 +127,7 @@ def retrieve_aws_data(
 
 
 def retrieve_all_aws_data(
-    start_date="2019-12-01", end_date=None, trading_platform="xetra"
+    start_date="2019-12-01", end_date=None, trading_platform="xetra", base_path="data"
 ):
     """
     :param trading_platform: "xetra" or "eurex"
@@ -151,12 +151,12 @@ def retrieve_all_aws_data(
 
     for date in dates:
         print(f"Retrieving stock data from {trading_platform} for day {date}...")
-        retrieve_aws_data(date, trading_platform)
+        retrieve_aws_data(date, trading_platform, base_path=base_path)
 
 
-def update_data_csv():
-    print(f"Updating {EXPORTED_CSV_PATH}...\n")
-    df = read_data()
+def update_data_csv(base_path="data"):
+    print(f"Updating {Path(base_path, EXPORTED_CSV_FILE_NAME)}...\n")
+    df = read_data(base_path=base_path)
 
     g = group_per_day(df)
-    g.to_csv(EXPORTED_CSV_PATH, index=False)
+    g.to_csv(EXPORTED_CSV_FILE_NAME, index=False)
