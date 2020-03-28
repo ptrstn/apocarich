@@ -131,7 +131,7 @@ def retrieve_all_aws_data(
 ):
     """
     :param trading_platform: "xetra" or "eurex"
-    :param start_date: Earliest possible is "2017-06-17" for Xetra AND "2017-05-27" for Eurex
+    :param start_date: Earliest possible is "2017-06-17" for Xetra and "2017-05-27" for Eurex
     :return:
     """
     start = datetime.datetime.strptime(start_date, DATE_FORMAT)
