@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.com/ptrstn/apocarich.svg?branch=master)](https://travis-ci.com/ptrstn/apocarich)
+[![codecov](https://codecov.io/gh/ptrstn/apocarich/branch/master/graph/badge.svg)](https://codecov.io/gh/ptrstn/apocarich)
 
 # apocarich
 
