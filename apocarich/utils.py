@@ -1,4 +1,5 @@
 import datetime
+from pathlib import Path
 
 from apocarich.settings import DATE_FORMAT
 
@@ -13,5 +14,6 @@ def is_today(date_string):
 
 
 def create_empty_file(path):
+    Path(path).parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w"):
         pass
