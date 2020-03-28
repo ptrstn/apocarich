@@ -122,11 +122,11 @@ You can specify different arguments to further filter your data.
 Run the R script:
 
 ```bash
- Rscript R/run.R 
+Rscript R/apocarich.R 
 ```
 
 You can also specify the arguments described above as follows:
 
 ```bash
- Rscript R/run.R --start 2020-02-01 --end 2020-03-26 --apocalypse 2020-02-15 --numchars 5 --outdir images --windowsize 10 --stocktype ETF
+Rscript R/apocarich.R --start 2020-02-01 --end 2020-03-26 --apocalypse 2020-02-15 --numchars 5 --outdir images --windowsize 10 --stocktype ETF
 ```

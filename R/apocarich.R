@@ -1,8 +1,7 @@
 #!/usr/bin/env Rscript
 # Run example:
-# Rscript R/run.R --start 2020-01-03 --end 2020-03-26 --apocalypse 2020-02-05 --numchars 5 --outdir bilder --windowsize 1 --stocktype ETF
+# Rscript R/apocarich.R --start 2020-01-03 --end 2020-03-26 --apocalypse 2020-02-05 --numchars 5 --outdir bilder --windowsize 1 --stocktype ETF
 #
-
 
 cat("Started apocarich R script!\n")
 cat("\nLoading/installing R packages...\n")
