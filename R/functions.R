@@ -299,7 +299,7 @@ filter_most_volume <- function(data, nmosttraded){
   }
 }
 
-filter_no_loss_until_apocalypse <- function(data, nolossuntilapo, apocalypse){
+filter_no_loss_until_apocalypse <- function(data, nolossuntilapo, apocalypse, max_ratio){
   if (nolossuntilapo) {
     # Filter data to all companies with no loss until apocalypse day
     tmp <- data %>%
@@ -326,7 +326,7 @@ filter_no_loss_until_apocalypse <- function(data, nolossuntilapo, apocalypse){
       ungroup() %>%
       spread(date_type, `Moving average`) %>%
       mutate(apoca_difference = apocalypse / before) %>%
-      filter(apoca_difference >= 1) %>%
+      filter(apoca_difference >= max_ratio) %>%
       select(ISIN) %>%
       pull()
     

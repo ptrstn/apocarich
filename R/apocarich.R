@@ -24,6 +24,7 @@ untilrecent <- DEFAULT_UNTIL_MOST_RECENT_DAY
 nmosttraded <- DEFAULT_NUMBER_OF_MOST_TRADED_STOCKS
 nmostvolume <- DEFAULT_NUMBER_OF_MOST_VOLUME_STOCKS
 nolossuntilapo <- DEFAULT_NO_LOSS_UNTIL_APOCALYPSE_DATE
+maxlossratio <-  DEFAULT_MAX_LOSS_RATIO
 
 cat("\nParsing command line arguments...\n")
 
@@ -39,7 +40,7 @@ data <- read_csv(here("data", "data.csv")) %>%
   drop_na(Mnemonic) %>%
   filter_most_volume(nmostvolume) %>%
   filter_most_traded(nmosttraded) %>%
-  filter_no_loss_until_apocalypse(nolossuntilapo, apocalypse)
+  filter_no_loss_until_apocalypse(nolossuntilapo, apocalypse, max_ratio = maxlossratio)
 
 caption <- generate_caption(data, stocktype, apocalypse, windowsize, nmosttraded, nmostvolume, untilrecent, nolossuntilapo)
 
@@ -62,6 +63,11 @@ max_date <- max(data$Date)
 
 file_name <- paste(stocktype, "_from_", min_date, "_to_", max_date, "_apoc_", apocalypse, "__", numstocks, "s_", windowsize, "w", sep = "")
 file_name <- str_replace(file_name, " ", "_")
+
+# Example PNG
+# example_png_path <- file.path("example", "example.png")
+# dir.create(dirname(example_png_path), showWarnings = FALSE, recursive = TRUE)
+# p %>% ggsave(filename=example_png_path, dpi=100, width = 26, height = 18.4, units = "cm")
 
 # Save PNG
 png_path <- file.path(outdir, "png", paste(file_name, ".png", sep = ""))
